@@ -1,1 +1,0 @@
-# Netlify Python function handler
