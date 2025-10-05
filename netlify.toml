@@ -1,6 +1,0 @@
-[build]
-  command = "echo 'Netlify build complete'" 
-  functions = "netlify/functions" 
-
-[functions]
-  python_runtime = "python3.8"
