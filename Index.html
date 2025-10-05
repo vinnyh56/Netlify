@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QSR Cafe Business Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script> 
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Cafe Performance Analytics Dashboard</h1>
+        <p>Key Insights for Decision Makers</p>
+    </header>
+
+    <nav>
+        <a href="upload.html">Upload New Data</a>
+        <a href="#daily-report">Daily Report</a>
+        <a href="#variance-report">Platform Variance</a>
+        <a href="#menu-analysis">Menu Analysis</a>
+    </nav>
+
+    <main>
+        <section id="daily-report" class="dashboard-card">
+            <h2>📊 Daily Performance Summary</h2>
+            <div id="daily-data">Loading...</div>
+        </section>
+
+        <section id="platform-chart-container" class="dashboard-card" style="grid-column: 1 / 3;">
+            <h2>📈 Platform Revenue Comparison</h2>
+            <canvas id="revenueChart" width="400" height="150"></canvas>
+        </section>
+
+        <section id="variance-report" class="dashboard-card">
+            <h2>🔄 Platform Variance Report (POS vs. Swiggy vs. Zomato)</h2>
+            <p>Compare sales, orders, and average ticket size.</p>
+            <table id="variance-table">
+                </table>
+        </section>
+
+        <section id="menu-analysis" class="dashboard-card">
+            <h2>📈 Item and Menu Category Reports</h2>
+            <p>Top Performing Items, Low Stock Warnings, and Category Breakdown.</p>
+            <ul id="menu-data">
+                </ul>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Cafe Analytics</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
