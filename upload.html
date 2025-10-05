@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Upload & Simulation</title>
+    <link rel="stylesheet" href="style.css"> 
+    <style>
+        /* Specific styles for the upload page */
+        .upload-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .upload-container h2 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        .file-input-group {
+            margin-bottom: 25px;
+            text-align: left;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 4px;
+        }
+
+        .file-input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #555;
+        }
+        
+        #simulate-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s;
+        }
+
+        #simulate-btn:hover {
+            background-color: #388E3C;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Data Upload Portal</h1>
+        <p>Please upload transaction data from all platforms.</p>
+    </header>
+
+    <main>
+        <div class="upload-container">
+            <h2>Source Data Upload</h2>
+
+            <form id="upload-form">
+                <div class="file-input-group">
+                    <label for="pos-file">POS System Data (CSV/Excel)</label>
+                    <input type="file" id="pos-file" name="pos-file" accept=".csv, .xlsx" required>
+                </div>
+
+                <div class="file-input-group">
+                    <label for="swiggy-file">Swiggy Reports (CSV/Excel)</label>
+                    <input type="file" id="swiggy-file" name="swiggy-file" accept=".csv, .xlsx" required>
+                </div>
+
+                <div class="file-input-group">
+                    <label for="zomato-file">Zomato Reports (CSV/Excel)</label>
+                    <input type="file" id="zomato-file" name="zomato-file" accept=".csv, .xlsx" required>
+                </div>
+
+                <button type="submit" id="simulate-btn">Run Simulation & Generate Reports</button>
+            </form>
+
+            <div style="margin-top: 20px;">
+                <strong>Status:</strong>
+                <p id="upload-status">Ready to upload...</p>
+            </div>
+            
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
