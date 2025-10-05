@@ -3,55 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QSR Cafe Business Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script> 
+    <title>QSR Cafe Reconciliation Dashboard</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
     <header>
-        <h1>Cafe Performance Analytics Dashboard</h1>
-        <p>Key Insights for Decision Makers</p>
+        <div class="header-content">
+            <h1>Harate Cafe Analytics</h1>
+            <div id="header-period" style="display: none;">
+                Reporting Period: <span id="period-display">N/A</span>
+            </div>
+        </div>
+        <nav class="main-nav">
+            <a href="#" class="nav-tab active" data-tab="home">Home (Upload)</a>
+            <a href="#" class="nav-tab disabled" data-tab="dashboard">Dashboard</a>
+            <a href="#" class="nav-tab disabled" data-tab="executive">Executive Summary</a>
+            <a href="#" class="nav-tab disabled" data-tab="platform">Platform Breakdown</a>
+            <a href="#" class="nav-tab disabled" data-tab="financial">Financial Analysis</a>
+            <a href="#" class="nav-tab disabled" data-tab="variance">Variance Analysis</a>
+            <a href="#" class="nav-tab disabled" data-tab="daily">Performance Report</a>
+        </nav>
     </header>
 
-    <nav>
-        <a href="upload.html">Upload New Data</a>
-        <a href="#daily-report">Daily Report</a>
-        <a href="#variance-report">Platform Variance</a>
-        <a href="#menu-analysis">Menu Analysis</a>
-    </nav>
+    <main class="container">
+        <section id="home-tab" class="tab-content active">
+            <h2>Data Input & Report Generation</h2>
+            <div class="upload-area">
+                <form id="report-settings-form" onchange="window.app.updateGenerateButton()">
+                    <fieldset class="period-selection">
+                        <legend>Select Reporting Period:</legend>
+                        <label><input type="radio" name="period" value="daily" checked> Daily</label>
+                        <label><input type="radio" name="period" value="weekly"> Weekly</label>
+                        <label><input type="radio" name="period" value="monthly"> Monthly</label>
+                    </fieldset>
+                </form>
 
-    <main>
-        <section id="daily-report" class="dashboard-card">
-            <h2>📊 Daily Performance Summary</h2>
-            <div id="daily-data">Loading...</div>
+                <div class="upload-grid">
+                    <div class="upload-zone" data-source="pos" onclick="window.app.triggerFileUpload('pos')">
+                        <h3>POS Data (Local Orders)</h3>
+                        <p>Click or drag & drop files here (CSV/XLSX)</p>
+                        <input type="file" id="pos-files" multiple accept=".csv, .xlsx" style="display: none;">
+                        <div id="pos-status" class="upload-status">No files selected</div>
+                    </div>
+
+                    <div class="upload-zone" data-source="zomato" onclick="window.app.triggerFileUpload('zomato')">
+                        <h3>Zomato Reports</h3>
+                        <p>Click or drag & drop files here (CSV/XLSX)</p>
+                        <input type="file" id="zomato-files" multiple accept=".csv, .xlsx" style="display: none;">
+                        <div id="zomato-status" class="upload-status">No files selected</div>
+                    </div>
+
+                    <div class="upload-zone" data-source="swiggy" onclick="window.app.triggerFileUpload('swiggy')">
+                        <h3>Swiggy Reports</h3>
+                        <p>Click or drag & drop files here (CSV/XLSX)</p>
+                        <input type="file" id="swiggy-files" multiple accept=".csv, .xlsx" style="display: none;">
+                        <div id="swiggy-status" class="upload-status">No files selected</div>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <button id="generate-btn" disabled onclick="window.app.generateReport()">Upload Files First</button>
+                    <button id="clear-btn" onclick="window.app.clearAllFiles()" class="secondary-btn">Clear All</button>
+                    <button id="demo-btn" onclick="window.app.loadDemoData()" class="secondary-btn">Load Demo Data</button>
+                </div>
+            </div>
+        </section>
+        
+        <section id="dashboard-tab" class="tab-content">
+            <h2>Dashboard Overview <small>(Key Performance Indicators)</small></h2>
+            <div id="dashboard-content"></div>
         </section>
 
-        <section id="platform-chart-container" class="dashboard-card" style="grid-column: 1 / 3;">
-            <h2>📈 Platform Revenue Comparison</h2>
-            <canvas id="revenueChart" width="400" height="150"></canvas>
+        <section id="executive-tab" class="tab-content">
+            <h2>Executive Summary <small>(Reconciliation Status)</small></h2>
+            <div id="executive-content" class="report-section"></div>
         </section>
 
-        <section id="variance-report" class="dashboard-card">
-            <h2>🔄 Platform Variance Report (POS vs. Swiggy vs. Zomato)</h2>
-            <p>Compare sales, orders, and average ticket size.</p>
-            <table id="variance-table">
-                </table>
+        <section id="platform-tab" class="tab-content">
+            <h2>Platform Breakdown <small>(Zomato vs. Swiggy)</small></h2>
+            <div id="platform-content" class="report-section"></div>
         </section>
 
-        <section id="menu-analysis" class="dashboard-card">
-            <h2>📈 Item and Menu Category Reports</h2>
-            <p>Top Performing Items, Low Stock Warnings, and Category Breakdown.</p>
-            <ul id="menu-data">
-                </ul>
+        <section id="financial-tab" class="tab-content">
+            <h2>Financial Analysis <small>(Commission & Payout Estimation)</small></h2>
+            <div id="financial-content" class="report-section"></div>
         </section>
 
+        <section id="variance-tab" class="tab-content">
+            <h2>Variance Analysis <small>(Mismatch Breakdown)</small></h2>
+            <div id="variance-content" class="report-section"></div>
+        </section>
+
+        <section id="daily-tab" class="tab-content">
+            <h2>Daily Performance Report <small>(Time-Series Data)</small></h2>
+            <div id="performance-content" class="report-section"></div>
+        </section>
     </main>
-
-    <footer>
-        <p>&copy; 2024 Cafe Analytics</p>
-    </footer>
-
-    <script src="script.js"></script>
+    
+    <script src="app.js"></script>
 </body>
 </html>
