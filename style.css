@@ -87,11 +87,11 @@ h1 {
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    display: none;
+    display: none; /* KEY: Hides all tabs initially */
 }
 
 .tab-content.active {
-    display: block;
+    display: block; /* KEY: Only shows the active tab */
 }
 
 .tab-content h2 {
