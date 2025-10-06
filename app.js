@@ -58,8 +58,7 @@ window.app = {
         });
     },
 
-    // --- UI/NAVIGATION CONTROLS (Omitted for brevity, assumed to be working) ---
-    // ... (All UI/Navigation functions remain the same) ...
+    // --- UI/NAVIGATION CONTROLS ---
     resetDashboardState: function() {
         this.uploadedFiles = { pos: [], zomato: [], swiggy: [] };
         this.generatedReport = null;
@@ -82,24 +81,59 @@ window.app = {
         document.getElementById('report-error-log').textContent = '';
     },
 
-    updateGenerateButton: function() {
-        const generateBtn = document.getElementById('generate-btn');
-        const hasRequiredFiles = this.uploadedFiles.pos.length > 0 && 
-                                 this.uploadedFiles.zomato.length > 0 && 
-                                 this.uploadedFiles.swiggy.length > 0;
-
-        generateBtn.disabled = !hasRequiredFiles;
-        generateBtn.textContent = hasRequiredFiles ? 'Generate Report' : 'Upload ALL Files to Generate';
+    disableReportTabs: function() {
+        const tabs = ['dashboard', 'executive', 'platform', 'financial', 'variance', 'daily'];
+        tabs.forEach(tab => {
+            const tabElement = document.querySelector(`[data-tab="${tab}"]`);
+            tabElement.classList.add('disabled');
+            tabElement.onclick = () => alert('Please upload files and generate a report first.');
+        });
     },
 
-    // Note: All other UI/navigation functions (showTab, initializeFileUpload, handleFileUpload, etc.)
-    // are assumed to be copied from the previous final version and remain unchanged.
-
-    // --- FILE HANDLING (Unchanged) ---
-    triggerFileUpload: function(source) {
-        document.getElementById(source + '-files').click();
+    enableReportTabs: function() {
+        const tabs = ['dashboard', 'executive', 'platform', 'financial', 'variance', 'daily'];
+        tabs.forEach(tab => {
+            const tabElement = document.querySelector(`[data-tab="${tab}"]`);
+            tabElement.classList.remove('disabled');
+            tabElement.onclick = () => this.showTab(tab);
+        });
     },
 
+    hideHeaderPeriod: function() {
+        document.getElementById('header-period').style.display = 'none';
+    },
+
+    showHeaderPeriod: function(period) {
+        document.getElementById('header-period').style.display = 'block';
+        document.getElementById('period-display').textContent = period;
+    },
+    
+    showTab: function(tabName) {
+        if (!this.hasGeneratedReport && tabName !== 'home') {
+            alert('Please upload files and generate a report first.');
+            return;
+        }
+
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+
+        document.getElementById(tabName + '-tab').classList.add('active');
+        const navTab = document.querySelector(`[data-tab="${tabName}"]`);
+        if (navTab) navTab.classList.add('active');
+    },
+
+    initializeTabNavigation: function() {
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                const tabName = e.target.dataset.tab;
+                this.showTab(tabName);
+            });
+        });
+    },
+
+    // --- FILE HANDLING ---
+    // Removed triggerFileUpload as it is now integrated into initializeFileUpload
+    
     initializeFileUpload: function() {
         const sources = ['pos', 'zomato', 'swiggy'];
 
@@ -107,12 +141,28 @@ window.app = {
             const uploadZone = document.querySelector(`[data-source="${source}"]`);
             const fileInput = document.getElementById(source + '-files');
 
+            // --- FIX: Reliable Click Handler ---
+            uploadZone.addEventListener('click', (e) => {
+                e.stopPropagation(); 
+                fileInput.click(); 
+            });
+            // ------------------------------------
+
             fileInput.addEventListener('change', (e) => {
                 if (e.target.files.length > 0) {
                     this.handleFileUpload(source, e.target.files);
                 }
             });
-            // Drag and drop handlers omitted for brevity
+            
+            // Drag and drop handlers (included for completeness)
+            uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+            uploadZone.addEventListener('dragleave', (e) => { e.preventDefault(); uploadZone.classList.remove('dragover'); });
+            uploadZone.addEventListener('drop', (e) => { 
+                e.preventDefault(); 
+                e.stopPropagation();
+                uploadZone.classList.remove('dragover');
+                this.handleFileUpload(source, e.dataTransfer.files);
+            });
         });
     },
 
@@ -130,53 +180,20 @@ window.app = {
         this.updateGenerateButton();
     },
 
+    updateGenerateButton: function() {
+        const generateBtn = document.getElementById('generate-btn');
+        const hasRequiredFiles = this.uploadedFiles.pos.length > 0 && 
+                                 this.uploadedFiles.zomato.length > 0 && 
+                                 this.uploadedFiles.swiggy.length > 0;
+
+        generateBtn.disabled = !hasRequiredFiles;
+        generateBtn.textContent = hasRequiredFiles ? 'Generate Report' : 'Upload ALL Files to Generate';
+    },
+
     clearAllFiles: function() {
         this.resetDashboardState();
     },
-    
+
     // --- REPORT GENERATION (CORE) ---
     generateReport: async function() {
-        const generateBtn = document.getElementById('generate-btn');
-        const errorLog = document.getElementById('report-error-log');
-        errorLog.textContent = '';
-        generateBtn.textContent = 'Reading Files...';
-        generateBtn.disabled = true;
-
-        try {
-            // 1. Read Raw Data using robust parsing
-            const posDataRaw = await this.parseFile(this.uploadedFiles.pos[0]);
-            const zomatoDataRaw = await this.parseFile(this.uploadedFiles.zomato[0]);
-            const swiggyDataRaw = await this.parseFile(this.uploadedFiles.swiggy[0]);
-
-            // 2. Process Raw Data into clean arrays
-            const posData = this.cleanParsedData(posDataRaw.data, 'pos');
-            const zomatoData = this.cleanParsedData(zomatoDataRaw.data, 'zomato');
-            const swiggyData = this.cleanParsedData(swiggyDataRaw.data, 'swiggy');
-            
-            if (!posData.length || !zomatoData.length || !swiggyData.length) {
-                 throw new Error("One or more files contained no data after header cleaning. Check file content.");
-            }
-
-            // 3. Perform Reconciliation and Calculations
-            this.generatedReport = this.runFullAnalysis(posData, zomatoData, swiggyData);
-            this.hasGeneratedReport = true;
-
-            // 4. Update UI
-            this.enableReportTabs();
-            this.showHeaderPeriod(this.generatedReport.period);
-            this.populateAllReports(this.generatedReport);
-            this.showTab('dashboard');
-
-            generateBtn.textContent = 'Report Generated';
-            generateBtn.disabled = false;
-        } catch (error) {
-            errorLog.textContent = `ERROR: ${error.message}. Please ensure the correct report file is uploaded.`;
-            generateBtn.textContent = 'Failed to Generate Report';
-            generateBtn.disabled = false;
-            this.hasGeneratedReport = false;
-            this.disableReportTabs();
-            console.error(error);
-        }
-    },
-    
-    // --- MANUAL HEADER CLEANING AND DATA MAPPING ---
+        const generate
