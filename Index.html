@@ -45,21 +45,21 @@
                 </form>
 
                 <div class="upload-grid">
-                    <div class="upload-zone" data-source="pos" onclick="window.app.triggerFileUpload('pos')">
+                    <div class="upload-zone" data-source="pos">
                         <h3>POS Data (Orders Master)</h3>
                         <p>Click or drag & drop the **Sheet1.csv** file.</p>
                         <input type="file" id="pos-files" accept=".csv" style="display: none;">
                         <div id="pos-status" class="upload-status">No files selected</div>
                     </div>
 
-                    <div class="upload-zone" data-source="zomato" onclick="window.app.triggerFileUpload('zomato')">
+                    <div class="upload-zone" data-source="zomato">
                         <h3>Zomato Settlement Data</h3>
                         <p>Click or drag & drop the **Order Level.csv** file.</p>
                         <input type="file" id="zomato-files" accept=".csv" style="display: none;">
                         <div id="zomato-status" class="upload-status">No files selected</div>
                     </div>
 
-                    <div class="upload-zone" data-source="swiggy" onclick="window.app.triggerFileUpload('swiggy')">
+                    <div class="upload-zone" data-source="swiggy">
                         <h3>Swiggy Settlement Data</h3>
                         <p>Click or drag & drop the **Order Level.csv** file.</p>
                         <input type="file" id="swiggy-files" accept=".csv" style="display: none;">
@@ -70,7 +70,7 @@
                 <div class="action-bar">
                     <button id="generate-btn" disabled onclick="window.app.generateReport()">Upload Files First</button>
                     <button id="clear-btn" onclick="window.app.clearAllFiles()" class="secondary-btn">Clear All</button>
-                    <button id="demo-btn" onclick="window.app.loadDemoData()" class="secondary-btn">Load Demo Data</button>
+                    <button id="demo-btn" onclick="window.app.loadDemoData()" class="secondary-btn" disabled>Load Demo Data</button>
                 </div>
             </div>
             <p class="error-log" id="report-error-log" style="color: red; margin-top: 20px; font-weight: bold;"></p>
